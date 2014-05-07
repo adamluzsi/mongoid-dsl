@@ -120,7 +120,7 @@ module Mongoid
           end
         end
 
-        def get_path(*included)
+        def _get_class_path(*included)
 
           # create defaults
           begin
@@ -317,7 +317,7 @@ module Mongoid
           # mother model find, and path generate
           begin
 
-            full_path   = self.get_path(*models_container)  || Array.new.push(self)
+            full_path   = self._get_class_path(*models_container)  || Array.new.push(self)
             mother_model= full_path.shift
 
             full_path.count.times do |index|
@@ -617,14 +617,24 @@ module Mongoid
 
     end
 
+    # for manual include
+    begin
+      self.__send__ :include, Mongoid::DSL::Document::Include
+      def self.included klass
+        klass.__send__ :extend,Mongoid::DSL::Document::Extend
+      end
+    end
+
   end
 end
 
 begin
+
   Mongoid::Config.inject_singleton_method :register_model, add: :before do |klass|
     klass.__send__ :extend,  Mongoid::DSL::Document::Extend
     klass.__send__ :include, Mongoid::DSL::Document::Include
   end
+
 rescue NoMethodError
 end
 
