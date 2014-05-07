@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.version       = File.open(File.join(File.dirname(__FILE__),"VERSION")).read.split("\n")[0].chomp.gsub(' ','')
   spec.authors       = ["Adam Luzsi"]
   spec.email         = ["adamluzsi@gmail.com"]
-  spec.description   = "Ruby Module for ease of use with mongoid based models"
+  spec.description   = "Ruby Module for ease of use with mongoid based models. with this module you get additional tools for your mongoid ODM. You can query directly to an embedded document class or geting references or parents for the model. Check Git for more!"
   spec.summary       = "Ruby Module for ease of use mongoid models"
 
   spec.files         = `git ls-files`.split($/)
