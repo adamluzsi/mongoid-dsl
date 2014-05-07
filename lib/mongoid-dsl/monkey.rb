@@ -74,11 +74,6 @@ module Mongoid
           end
         end
 
-        #> not yet finished
-        def available_fields
-          Mongoid::Document.available_fields(self)
-        end
-
         def properties
 
           hash_data = Hash.new
