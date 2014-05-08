@@ -520,8 +520,17 @@ module Mongoid
           return return_array
         end
 
-        alias :this_to_me :relation_connection_type
-        alias :me_to_this :reverse_relation_conn_type
+        #> [:none,:self,:one,:many]
+        def relation_to?(klass)
+          raise(ArgumentError,"obj must be class: #{klass}") unless klass <= Class
+          return self.relation_connection_type(klass).to_s.downcase.split('::').last.to_sym
+        end
+
+        #> [:none,:self,:one,:many]
+        def relation_from?(klass)
+          raise(ArgumentError,"obj must be class: #{klass}") unless klass <= Class
+          return self.reverse_relation_conn_type(klass).to_s.downcase.split('::').last.to_sym
+        end
 
       end
 
@@ -537,6 +546,7 @@ module Mongoid
           return nil
 
         end
+        alias __parent__ _parent
 
         def _reference
 
@@ -548,6 +558,7 @@ module Mongoid
           return nil
 
         end
+        alias __reference__ _reference
 
         alias :get_parent_doc     :_parent
         alias :get_reference_doc  :_reference
