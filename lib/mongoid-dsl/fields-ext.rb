@@ -102,7 +102,7 @@ end
 end
 
 
-[ :with, :match, :regex, :regexp ].each do |name_to_use|
+[ :format, :with, :match, :regex, :regexp ].each do |name_to_use|
   Mongoid::Fields.option name_to_use do |model, field, value|
 
     field.instance_variable_get('@options')[:format]= field.instance_variable_get('@options').delete(name_to_use)
