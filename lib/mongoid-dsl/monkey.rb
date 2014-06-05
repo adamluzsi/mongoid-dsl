@@ -587,31 +587,29 @@ module Mongoid
         # convert mongoid name
         def convert_model_name
 
-          unless self.class <= Class || self.class <= String || self.class <= Symbol || self.class <= NilClass
-            raise ArgumentError, "invalid input, must be Class or String: => #{self.class} (#{self})"
+          unless self.class <= ::Class || self.class <= ::String || self.class <= ::Symbol || self.class <= ::NilClass
+            return super;# raise ArgumentError, "invalid input, must be Class or String: => #{self.class} (#{self})"
           end
 
-          if self.class <= NilClass
+          if self.class <= ::NilClass
             return nil
           end
 
-          case self.class.to_s
+          case true
 
-            when "Class"
+            when self.class == ::Class
               return self.to_s.split('::').last.underscore
 
-            when "String","Symbol"
-              Mongoid.models.each do |one_model_name|
-                if  self.to_s == one_model_name.to_s.split('::').last.underscore || \
-                    self.to_s == one_model_name.to_s.split('::').last.underscore+('s')
+            when ![ ::Symbol, ::String].select{ |klass|self.class <= klass }.empty?
 
-                  return one_model_name.to_s.constantize
-
+              Mongoid.models.each do |model_name|
+                mongoid_model_name= model_name.mongoid_name
+                unless [mongoid_model_name,mongoid_model_name+'s'].select{|mn| self.to_s == mn }.empty?
+                  return model_name.to_s.constantize
                 end
               end
 
               return self.to_s.split('::').last.underscore
-
 
           end
 
@@ -622,18 +620,14 @@ module Mongoid
         alias :mongoize_name        :convert_model_name
         alias :mongoid_name         :convert_model_name
 
-        alias :mongoid_name_convert :convert_model_name
-
       end
 
     end
 
     # for manual include
-    begin
-      self.__send__ :include, Mongoid::DSL::Document::Include
-      def self.included klass
-        klass.__send__ :extend,Mongoid::DSL::Document::Extend
-      end
+    self.__send__ :include, Mongoid::DSL::Document::Include
+    def self.included klass
+      klass.__send__ :extend,Mongoid::DSL::Document::Extend
     end
 
   end
