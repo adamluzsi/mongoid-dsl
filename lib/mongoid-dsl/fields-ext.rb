@@ -181,3 +181,30 @@ end
 
   end
 end
+
+[:hidden,:hide].each do |name_to_use|
+  Mongoid::Fields.option name_to_use do |model, field, value|
+
+    field.instance_variable_get('@options')[:hidden]= field.instance_variable_get('@options').delete(name_to_use)
+
+    model.instance_eval do
+
+      begin
+        self.class_variable_get(:@@mongoid_dsl_hidden_fields)
+      rescue NameError
+
+        self.class_variable_set :@@mongoid_dsl_hidden_fields, []
+        [:hidden,:hide].each { |sym| scope sym, -> { without(*self.class_variable_get(:@@mongoid_dsl_hidden_fields)) } }
+
+        unless default_scoping?
+          default_scope -> { hidden }
+        end
+
+      end
+
+      self.class_variable_get(:@@mongoid_dsl_hidden_fields).push(field.instance_variable_get(:@name)) if !!value
+
+    end
+
+  end
+end
