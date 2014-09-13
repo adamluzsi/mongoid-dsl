@@ -259,7 +259,7 @@ end
   end
 end
 
-
+#> cause the field become protected and only be changed throught helper methods
 [ :protected, :defended ].each do |name_to_use|
   Mongoid::Fields.option name_to_use do |model, field, value|
 
