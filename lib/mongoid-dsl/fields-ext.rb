@@ -258,3 +258,51 @@ end
 
   end
 end
+
+
+[ :protected, :defended ].each do |name_to_use|
+  Mongoid::Fields.option name_to_use do |model, field, value|
+
+    field.instance_variable_get('@options')[:protected]= !!field.instance_variable_get('@options').delete(name_to_use)
+
+    if value
+
+      model.class_eval do
+
+        define_method("protected_#{field.name}=") do |new_value|
+          self.instance_variable_get(:@protected_attributes)[field.name]=new_value
+          self[field.name]=new_value
+        end
+
+        alias_method "set_protected_#{field.name}","protected_#{field.name}="
+
+      end
+
+      model.instance_eval do
+
+        after_initialize do |doc|
+
+          unless doc.instance_variable_get(:@protected_attributes)
+            doc.instance_variable_set(:@protected_attributes,{})
+          end
+
+          doc.instance_variable_get(:@protected_attributes
+          )[field.name] = doc.instance_variable_get(:@attributes)[field.name]
+
+        end
+
+        before_save do |doc|
+          if doc.instance_variable_get(:@protected_attributes)
+            doc.instance_variable_get(:@protected_attributes).each_pair do |k,v|
+              doc.instance_variable_get(:@attributes)[k]=v
+            end
+          end
+        end
+
+
+      end
+
+    end
+
+  end
+end
