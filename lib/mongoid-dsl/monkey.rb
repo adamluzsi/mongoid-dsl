@@ -330,9 +330,9 @@ module Mongoid
           begin
 
             deep_level = (full_path.count) || 0
-            chains= full_path
+            chains = full_path
 
-            if !full_path.empty? && !full_path.nil?
+            if !full_path.nil? && !full_path.empty?
               full_path= full_path.join('.')+'.'
             else
               full_path= String.new
@@ -467,22 +467,6 @@ module Mongoid
 
           end
 
-          # TODO find out how to add elements to a criteria obj
-          # # convert to mongid criteria
-          # begin
-          #
-          #   mongoid_crit= Mongoid::Criteria.new(self)
-          #
-          #   puts mongoid_crit.methods - Object.methods
-          #
-          #
-          #   mongoid_crit.add_to_set return_data[0]
-          #
-          #   return mongoid_crit
-          #
-          # rescue Exception
-          # end
-
           return return_data
 
         end
@@ -495,29 +479,12 @@ module Mongoid
         end
 
         def _find(target_id)
-
-          # pre validation
-          begin
-            if target_id.class != Moped::BSON::ObjectId && target_id.class != String
-              raise ArgumentError, "id parameter must be id or ObjectId"
-            end
-          end
-
-          # Do the Gangnam style
-          begin
-            return_doc = self._where( '_id' => target_id )[0]
-          end
-
-          return return_doc
+          return self._where(
+              '_id' => Moped::BSON::ObjectId.from_string(target_id.to_s)
+          )[0]
         end
         def _find_by(*args)
-
-          # Do the Gangnam style
-          begin
-            return_array = self._where(*args).first
-          end
-
-          return return_array
+          return self._where(*args).first
         end
 
         #> [:none,:self,:one,:many]
@@ -604,7 +571,7 @@ module Mongoid
 
               Mongoid.models.each do |model_name|
                 mongoid_model_name= model_name.mongoid_name
-                unless [mongoid_model_name,mongoid_model_name+'s'].select{|mn| self.to_s == mn }.empty?
+                if [mongoid_model_name,mongoid_model_name+'s'].any?{|mn| self.to_s == mn }
                   return model_name.to_s.constantize
                 end
               end
