@@ -113,5 +113,16 @@ The return object will be array if the target model is not a main one but an emb
 
 ```
 
+As a plus, you can dump your mongoid models into a Hash Object,
+that can be used to serialized as yaml and lend out as documentation if you lazy as me
+
+```ruby
+
+  File.write "/tmp/#{$0}.model_dump.yml",
+             Mongoid.model_relations_dump.to_yaml
+
+
+```
+
 
 you can find working examples in the example folder
