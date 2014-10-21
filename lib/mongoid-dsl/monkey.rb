@@ -572,7 +572,7 @@ module Mongoid
               Mongoid.models.each do |model_name|
                 mongoid_model_name= model_name.mongoid_name
                 if [mongoid_model_name,mongoid_model_name+'s'].any?{|mn| self.to_s == mn }
-                  return model_name.to_s.constantize
+                  return model_name
                 end
               end
 
